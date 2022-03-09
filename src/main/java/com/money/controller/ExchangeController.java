@@ -62,7 +62,7 @@ public class ExchangeController {
             System.out.println(str);
 
             //str = "City: \"effectiveDate\":\"2022-03-03\"\"distance\":\"47028\" \"effectiveDate\":\"2022-03-03\"\"distance\":\"4.7028\" \"effectiveDate\":\"2022-03-03\"\"distance\":\"4.7028\" Price:";
-            String regex = "\"effectiveDate\":\"([0-9\\-]+)\"\"mid\":(\\d+\\.+\\d+)";
+            String regex = "\"effectiveDate\":\"([0-9\\-]+)\"\"mid\":(\\d+\\.+\\d+)"
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(str);
             StringBuilder result = new StringBuilder();
