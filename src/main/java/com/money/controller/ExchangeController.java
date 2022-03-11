@@ -34,58 +34,30 @@ import java.util.regex.Pattern;
 @RestController
 public class ExchangeController {
     @RequestMapping("/api/exchange-rates/{currencyCode}")
-    /*public List<Exchange> getPrice(){
-       // String url = "http://api.nbp.pl/api/exchangerates/rates/a/chf/";
-        //RestTemplate restTemplate = new RestTemplate();
-        //Exchange [] money= restTemplate.getForObject(url, Exchange[].class);
-        Exchange []money = new Exchange[2];
-        money[0]=new Exchange("11","11","11","11","11","11");
-        money[1]=new Exchange("11","11","11","11","11","11");
-        return Arrays.asList(money);
-    }*/
-    public List<Gold> getPrice(@PathVariable String currencyCode){
-        String url = "http://api.nbp.pl/api/cenyzlota/last/14";
-        RestTemplate restTemplate = new RestTemplate();
-        Gold [] zloto = restTemplate.getForObject(url, Gold[].class);
-
-        Logger logger = LoggerFactory.getLogger(ExchangeController.class);
+    public List<Exchange> getPrice(@PathVariable String currencyCode){
+        Exchange [] e = new Exchange[5];
         try{
-            //url = "http://www.mocky.io/v2/5c8bdd5c360000cd198f831e";
-            url = "http://api.nbp.pl/api/exchangerates/rates/a/chf/last/5";
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            File f= new File(url);
-            InputStream inputStream = null;
+            String url = "http://api.nbp.pl/api/exchangerates/rates/a/"+currencyCode+"/last/5";
             URL url1 = new URL(url);
             Scanner s = new Scanner(url1.openStream());
             String str = s.nextLine();
-            System.out.println(str);
-
-            //str = "City: \"effectiveDate\":\"2022-03-03\"\"distance\":\"47028\" \"effectiveDate\":\"2022-03-03\"\"distance\":\"4.7028\" \"effectiveDate\":\"2022-03-03\"\"distance\":\"4.7028\" Price:";
-            String regex = "\"effectiveDate\":\"([0-9\\-]+)\"\"mid\":(\\d+\\.+\\d+)";
+            String [] tab= str.split("\\[");
+            tab[1]= tab[1].replace(",","");
+            String regex = "\\{\"no\":\"([0-9\\/A-Z\\/A-Z\\/0-9]+)\"\"effectiveDate\":\"([0-9\\-]+)\"\"mid\":(\\d+\\.+\\d+)\\}";
             Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(str);
+            Matcher matcher = pattern.matcher(tab[1]);
             StringBuilder result = new StringBuilder();
-            while (matcher.find()) {
-                result.append("[");
-                result.append(matcher.group(1));
-                result.append(":");
-                result.append(matcher.group(2));
-                result.append("]");
-            }
-            System.out.println(result.toString());
 
-            //inputStream = new FileInputStream(f);
-            // Document doc = builder.parse(url);
-            //doc.getDocumentElement().normalize();
-            //String s = doc.getElementsByTagName("price").item(0).getTextContent();
-            //String s = doc.getElementsByTagName("No").item(0).getTextContent();
-            //System.out.println(builder);
+            int i=0;
+            while (matcher.find()) {
+                e[i]=new Exchange(matcher.group(2),Double.parseDouble(matcher.group(3)));
+                i++;
+            }
 
         }catch (Exception ex)
         {
-            logger.error(ex.getMessage());
+            System.out.println("Error");
         }
-        return Arrays.asList(zloto);
+        return Arrays.asList(e);
     }
 }
